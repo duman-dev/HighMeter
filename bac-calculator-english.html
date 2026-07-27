@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Blood Alcohol Content Calculator Using Widmark Formula - Calculate your BAC and time to sobriety">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BAC Tracker">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%230f172a' width='192' height='192'/><circle cx='96' cy='96' r='70' fill='%2338bdf8'/><text x='96' y='110' font-size='60' font-weight='bold' text-anchor='middle' fill='%230f172a' font-family='Arial'>B</text></svg>">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230f172a' width='100' height='100'/><circle cx='50' cy='50' r='40' fill='%2338bdf8'/><text x='50' y='65' font-size='50' font-weight='bold' text-anchor='middle' fill='%230f172a' font-family='Arial'>B</text></svg>">
+    <title>BAC Calculator & Sobriety Tracker</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #38bdf8;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .radio-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .radio-btn input {
+            display: none;
+        }
+
+        .radio-btn.active {
+            border-color: var(--primary);
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: var(--bg-color);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 20px;
+            background-color: var(--bg-color);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: none;
+            text-align: center;
+        }
+
+        .bac-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ef4444;
+            margin: 10px 0;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 24px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>BAC Tracker</h1>
+    <p class="subtitle">Blood Alcohol Content Calculator Using Widmark Formula</p>
+
+    <div class="form-group">
+        <label>Biological Sex</label>
+        <div class="radio-group">
+            <div class="radio-btn active" onclick="setGender('male', this)">
+                Male
+                <input type="radio" id="male" name="gender" value="male" checked>
+            </div>
+            <div class="radio-btn" onclick="setGender('female', this)">
+                Female
+                <input type="radio" id="female" name="gender" value="female">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="weight">Weight (kg)</label>
+        <input type="number" id="weight" placeholder="E.g.: 75" min="30" max="200">
+    </div>
+
+    <div class="form-group">
+        <label for="drinkType">Drink Type</label>
+        <select id="drinkType">
+            <option value="5">Beer (%5 Alcohol)</option>
+            <option value="12">Wine (%12 Alcohol)</option>
+            <option value="40">Spirits (%40 Vodka/Whiskey/Gin)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="amount">Amount (ml)</label>
+        <input type="number" id="amount" placeholder="E.g.: 500" min="10" max="3000">
+    </div>
+
+    <div class="form-group">
+        <label for="hours">Hours Since Drinking Started</label>
+        <input type="number" id="hours" placeholder="E.g.: 2" min="0" max="24" step="0.5">
+    </div>
+
+    <button onclick="calculateBAC()">Calculate</button>
+
+    <div class="result-box" id="resultBox">
+        <div id="statusText" style="font-weight: bold;">Estimated Blood Alcohol Content:</div>
+        <div class="bac-value" id="bacValue">0.00%</div>
+        <p id="sobrietyTime" style="font-size: 14px; color: var(--text-muted);"></p>
+    </div>
+
+    <div class="disclaimer">
+        <strong>Legal Disclaimer:</strong> Although this app uses the scientific Widmark formula, results vary based on individual metabolism rates. This does not provide medical or legal advice. Never drive if impaired.
+    </div>
+</div>
+
+<script>
+    // Service Worker Registrasyonu
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registered:', registration);
+            })
+            .catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+    }
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    let installButton = null;
+
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Install button oluştur ve göster
+        if (!installButton) {
+            installButton = document.createElement('div');
+            installButton.id = 'install-prompt';
+            installButton.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+                color: white;
+                padding: 14px 20px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+                animation: slideIn 0.3s ease-out;
+                font-size: 14px;
+            `;
+            installButton.innerHTML = '📱 Add to Home Screen';
+            
+            installButton.addEventListener('click', () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(choiceResult => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                            installButton.style.display = 'none';
+                        } else {
+                            console.log('User dismissed the install prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                }
+            });
+            
+            // Close buton ekle
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = ' ✕';
+            closeBtn.style.cssText = 'margin-left: 10px; cursor: pointer; font-weight: bold;';
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                installButton.style.display = 'none';
+            });
+            installButton.appendChild(closeBtn);
+            
+            document.body.appendChild(installButton);
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        console.log('App installed successfully');
+        if (installButton) {
+            installButton.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
+
+    // Slide-in animasyonu
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        #install-prompt {
+            animation: slideIn 0.3s ease-out, pulse 2s infinite 2s;
+        }
+        
+        #install-prompt:hover {
+            box-shadow: 0 6px 16px rgba(56, 189, 248, 0.5);
+            transform: translateY(-2px);
+        }
+    `;
+    document.head.appendChild(style);
+
+    let selectedGender = 'male';
+
+    function setGender(gender, element) {
+        selectedGender = gender;
+        document.querySelectorAll('.radio-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function calculateBAC() {
+        const weight = parseFloat(document.getElementById('weight').value);
+        const alcoholPercent = parseFloat(document.getElementById('drinkType').value);
+        const amount = parseFloat(document.getElementById('amount').value);
+        const hours = parseFloat(document.getElementById('hours').value) || 0;
+
+        if (!weight || !amount) {
+            alert('Please fill in weight and amount fields.');
+            return;
+        }
+
+        // 1. Calculate pure alcohol in grams (Density: 0.8)
+        const pureAlcoholGrams = amount * (alcoholPercent / 100) * 0.8;
+
+        // 2. Body water distribution constant (r) based on gender
+        const r = selectedGender === 'male' ? 0.68 : 0.55;
+
+        // 3. Widmark Formula for BAC calculation
+        // Convert weight to grams (weight * 1000)
+        let bac = (pureAlcoholGrams / (r * (weight * 1000))) * 100;
+
+        // 4. Subtract alcohol metabolized over time (0.015 per hour)
+        bac = bac - (0.015 * hours);
+
+        if (bac < 0) bac = 0;
+
+        // Convert to percentage (BAC value multiplied by 10 approximately equals percentage)
+        const percentage = bac * 10;
+
+        // 5. Time to complete sobriety (Remaining BAC / 0.015)
+        const hoursToSober = bac / 0.015;
+
+        // Display results
+        const resultBox = document.getElementById('resultBox');
+        const bacValueDiv = document.getElementById('bacValue');
+        const sobrietyTimeP = document.getElementById('sobrietyTime');
+
+        resultBox.style.display = 'block';
+        bacValueDiv.innerText = `${percentage.toFixed(2)}%`;
+
+        if (percentage === 0) {
+            bacValueDiv.style.color = '#10b981'; // Green
+            sobrietyTimeP.innerText = 'Estimated alcohol in your system: None.';
+        } else {
+            bacValueDiv.style.color = '#ef4444'; // Red
+            sobrietyTimeP.innerText = `Estimated time for complete sobriety and alcohol clearance: ~${hoursToSober.toFixed(1)} hours.`;
+        }
+    }
+</script>
+</body>
+</html>
