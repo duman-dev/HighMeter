@@ -1,7 +1,7 @@
 const CACHE_NAME = 'bac-tracker-v1';
 const urlsToCache = [
   './',
-  './bac-calculator-english.html',
+  './index.html',
   './manifest.json'
 ];
 
@@ -56,7 +56,7 @@ self.addEventListener('fetch', event => {
         // Network başarısız - cache'den al
         return caches.match(event.request)
           .then(response => {
-            return response || caches.match('./bac-calculator-english.html');
+            return response || caches.match('./index.html');
           });
       })
   );
