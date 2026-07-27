@@ -2,7 +2,7 @@
   "name": "BAC Calculator & Sobriety Tracker",
   "short_name": "BAC Tracker",
   "description": "Blood Alcohol Content Calculator Using Widmark Formula - Calculate your BAC and time to sobriety",
-  "start_url": "./bac-calculator-english.html",
+  "start_url": "./index.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -36,7 +36,7 @@
       "name": "Calculate BAC",
       "short_name": "Calculate",
       "description": "Quickly calculate your blood alcohol content",
-      "url": "./bac-calculator-english.html?mode=calculate",
+      "url": "./index.html?mode=calculate",
       "icons": [
         {
           "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%2338bdf8' width='96' height='96'/><text x='48' y='60' font-size='40' font-weight='bold' text-anchor='middle' fill='%23ffffff' font-family='Arial'>%</text></svg>",
